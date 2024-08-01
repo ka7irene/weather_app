@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+</head>
+<body>
+    <center>
+    <h2>Current weather in Paris</h2>
+    <div id="weather"></div>
+    </center>
+
+    <script>
+        async function fetchWeather() { // Fetching weather data from the API
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`);
+                const data = await response.json();
+                console.log(data) 
+                return data;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+            }
+        }
+        
+        // Function to display weather data on page
+        function displayWeather(weatherData) {
+            const weatherDiv = document.getElementById('weather');
+            if (weatherData) {
+                const currentWeather = weatherData;
+                weatherDiv.innerHTML = `
+
+                <p>Temperature: ${currentWeather.hourly.temperature_2m[0]}&#176;C</p>
+                <p>Humidity: ${currentWeather.hourly.relative_humidity_2m[0]}%</p>
+                <p>Wind speed: ${currentWeather.hourly.wind_speed_10m[0]} m/s</p>
+                `;
+            } else {
+                weatherDiv.textContent = 'Weather data unavailable';
+            }
+        }
+
+        // Function fetching and displaying weather data
+        async function fetchAndDisplayWeather() {
+            try {
+                const weatherData = await fetchWeather();
+                displayWeather(weatherData);
+            } catch (error) {
+                console.error('Error displaying weather data:', error);
+                const weatherDiv = document.getElementById('weather');
+                weatherDiv.textContent = 'Failed to fetch weather data.';
+            }
+        }
+
+        // Calling function to fetch and display weather data
+        fetchAndDisplayWeather();
+    </script>
+</body>
+</html>
